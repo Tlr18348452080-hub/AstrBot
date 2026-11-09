@@ -521,6 +521,13 @@ class ToolLoopAgentRunner(BaseAgentRunner[TContext]):
         if include_model:
             # For primary provider we keep explicit model selection if provided.
             payload["model"] = self.req.model
+        # Per-request sampling parameters (from on_llm_request hooks, e.g. soma body state)
+        if self.req.temperature is not None:
+            payload["temperature"] = self.req.temperature
+        if self.req.top_p is not None:
+            payload["top_p"] = self.req.top_p
+        if self.req.top_k is not None:
+            payload["top_k"] = self.req.top_k
         if self.streaming:
             stream = self.provider.text_chat_stream(**payload)
             try:
